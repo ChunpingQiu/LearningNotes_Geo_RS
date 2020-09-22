@@ -1,3 +1,6 @@
 ./.ipynb_checkpoints/
+./__pycache__/
+./.idea/
 ./4self/
-./test/
+./test4self/
+./files/res/

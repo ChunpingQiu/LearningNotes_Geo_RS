@@ -17,6 +17,7 @@ except Exception as e:
 
 import json
 import os
+from geeCode_qgis import exportCloudFreeSen2
 
 roiFile = r".\files\Multi_Class_Land_Cover_Change_AOIs.geojson"
 s2_bands = ['B2', 'B3', 'B4', 'B5', 'B6', 'B7', 'B8', 'B8A', 'B11', 'B12']
@@ -37,11 +38,24 @@ with open(roiFile) as f:
         data = json.load(f)
 
 for feature in data['features']:
+
+        print(feature['properties']['title'])
+
+        if feature['properties']['title'] == "4666_2369_13" or feature['properties']['title'] == "8079_4130_13" :
+                continue
+
+        saveFolder_ = saveFolder + "/" + feature['properties']['title']
+        if not os.path.exists(saveFolder_):
+                os.mkdir(saveFolder_)
+        else:
+                continue
+
         cor = feature['geometry']['coordinates']
 
         aoi = ee.Geometry.Polygon([cor[0][0][0:2], cor[0][1][0:2], cor[0][2][0:2], cor[0][3][0:2], cor[0][4][0:2]],
                                   None, False)
-        # print(aoi)
+        #buffer aoi
+        aoi = aoi.buffer(100).bounds().simplify(ee.ErrorMargin(1, "meters"))
 
         epsg = get_utm_epsg(cor[0][0][0], cor[0][0][1])
 
@@ -51,15 +65,24 @@ for feature in data['features']:
                         start_date = ee.Date.fromYMD(year, m, 1)
                         end_date = ee.Date.fromYMD(year, m + 1, 1)
 
-                        s2 = ee.ImageCollection('COPERNICUS/S2') \
-                                .filterDate(start_date, end_date).select(s2_bands) \
-                                .filterBounds(aoi).median().clip(aoi)
+                        s2_all = ee.ImageCollection('COPERNICUS/S2') \
+                                .filterDate(start_date, end_date).filterBounds(aoi)
 
-                        filename = os.path.join(saveFolder,
+                        print("the available s2 data for this roi and time: ", s2_all.size().getInfo())
+
+                        s2_masked = exportCloudFreeSen2(aoi, start_date, end_date)
+                        s2_masked = s2_masked.select(s2_bands)
+
+                        if m<10:
+                                filename = os.path.join(saveFolder_,
+                                                        feature['properties']['title'] + '_' + str(year) + '_0' + str(
+                                                                m) + '.tif')
+                        else:
+                                filename = os.path.join(saveFolder_,
                                                 feature['properties']['title'] + '_' + str(year) + '_' + str(
                                                         m) + '.tif')
 
-                        geemap.ee_export_image(s2, filename=filename, scale=10, region=aoi, crs=ee.Projection(epsg),
+                        geemap.ee_export_image(s2_masked, filename=filename, scale=10, region=aoi, crs=ee.Projection(epsg),
                                                file_per_band=False)
 
                         os.remove(filename[:-4] + ".zip")
@@ -68,14 +91,18 @@ for feature in data['features']:
                 start_date = ee.Date.fromYMD(year, 12, 1)
                 end_date = ee.Date.fromYMD(year + 1, 1, 1)
 
-                s2 = ee.ImageCollection('COPERNICUS/S2') \
-                        .filterDate(start_date, end_date).select(s2_bands) \
-                        .filterBounds(aoi).median().clip(aoi)
+                #s2 = ee.ImageCollection('COPERNICUS/S2') \
+                #        .filterDate(start_date, end_date).select(s2_bands) \
+                #        .filterBounds(aoi).median().clip(aoi)
 
-                filename = os.path.join(saveFolder,
+                s2_masked = exportCloudFreeSen2(aoi, start_date, end_date)
+                s2_masked = s2_masked.select(s2_bands)
+
+                filename = os.path.join(saveFolder_,
                                         feature['properties']['title'] + '_' + str(year) + '_' + str(m+1) + '.tif')
 
-                geemap.ee_export_image(s2, filename=filename, scale=10, region=aoi, crs=ee.Projection(epsg),
+                geemap.ee_export_image(s2_masked, filename=filename, scale=10, region=aoi, crs=ee.Projection(epsg),
                                        file_per_band=False)
 
                 os.remove(filename[:-4] + ".zip")
+#8079_4130_13 4666_2369_13
