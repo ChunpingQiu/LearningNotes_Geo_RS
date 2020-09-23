@@ -2,6 +2,9 @@
 %get the projection and coordinates (transformation);
 %mark some points (from kml) on the plot and save figure
 
+clc
+clear
+
 % rmpath('E:\OtherDisk\DL1.0\0LCZgit\Analysis\util')
 addpath('.\kml2struct')
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
