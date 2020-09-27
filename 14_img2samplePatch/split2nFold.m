@@ -1,6 +1,6 @@
 
 %split a data into n part, class wisely
-function split2nFold(x_tra, y_tra, patchPos, numFold, file0)
+function numEachClass = split2nFold(x_tra, y_tra, patchPos, numFold, file0)
 
 index = randperm(size(y_tra,1)) ;
 x_Tra = x_tra(index,:,:,:) ;

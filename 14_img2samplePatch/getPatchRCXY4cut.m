@@ -45,7 +45,6 @@ for i = 1: length(class)
     clear r c x y row col
 end
 
-end
 
 info='size of centerRCLable in function getPatchRCXY4cut:'
 size(centerRCLable)

@@ -19,13 +19,13 @@ function excInfo= cutPatch2Mat(fileImg, roiDir, city, patchHalf, imgPatchDir0, t
 
 idx=find(city=='_') ;
 city0=city(idx(end)+2:end)
-fileROI = [roiDir '/'] ;
+fileROI = [roiDir '\'] ;
 
 indexTmp = find(fileImg == '_') ;
 Season = fileImg(indexTmp(end)+1:(end-4)) ;
 cityMonth = [city '_' Season] ;
 
-imgPatchDir = [imgPatchDir0 city '/'] ;
+imgPatchDir = [imgPatchDir0 city '\'] ;
 mkdir(imgPatchDir)
 
 try
@@ -105,25 +105,14 @@ size(indexOut1,1)/ size(centerRCLable,1)
 % end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 numEachClass = zeros(1, 17) ;% # of patches
-GT_RC_used =[] ;
+%GT_RC_used =[] ;%
 
-%save to numPart part
-numPart = 1 ;
+%save
 rStart = 1 ;
-for i = 1:numPart
-    if i ==numPart
-        rEnd = size(centerRCLable,1) ;
-    else
-        rEnd = rStart + round(size(centerRCLable,1)/numPart) ;
-    end
+rEnd = size(centerRCLable,1) ;
 
-    [numData, label_RC] =  saveImg2matS2L8(centerRCLable(rStart:rEnd,:), img0, train_test, imgPatchDir, cityMonth, patchHalf,  i, city) ;
-    numEachClass(1,1:17) =  numEachClass(1,1:17)+numData;
-    GT_RC_used=[GT_RC_used; label_RC];
-
-
-    rStart = rEnd  + 1;
-end
+[numData, label_RC] =  saveImg2matS2L8(centerRCLable(rStart:rEnd,:), img0, train_test, imgPatchDir, cityMonth, patchHalf) ;
+numEachClass(1,1:17) =  numEachClass(1,1:17)+numData;
 
 if train_test==1 %training samples
 
