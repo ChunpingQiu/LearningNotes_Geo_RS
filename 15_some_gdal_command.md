@@ -1,3 +1,6 @@
+
+# A small list
+
 - Crop tiff file based on kml file
 
 `gdalwarp -of GTiff -cutline 'xx.kml' -crop_to_cutline 'original.tif' 'cropped.tif'`
@@ -19,3 +22,7 @@
 -separate
 
     Place each input file into a separate band.
+
+# Important Reference
+
+- https://github.com/dwtkns/gdal-cheat-sheet
